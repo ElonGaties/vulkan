@@ -47,7 +47,7 @@ int _cdecl main()
     LPWSTR OutputPath, Name;
     FLOAT DecryptFactor;
     DUMPER Dumper;
-    BOOL DebugMode, UseTimestamp;
+    BOOL DebugMode, UseTimestamp, WaitLaunch;
 
     szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
 
@@ -62,6 +62,7 @@ int _cdecl main()
     DecryptFactor = 1.0f;
     OutputPath = L".";
     UseTimestamp = FALSE;
+    WaitLaunch = FALSE;
 
     for (int i = 1; i < nArgs; i++)
     {
@@ -97,6 +98,10 @@ int _cdecl main()
         {
             DebugMode = TRUE;
         }
+        else if (lstrcmpW(szArglist[i], L"-w") == 0)
+        {
+            WaitLaunch = TRUE;
+        }
         else if (lstrcmpW(szArglist[i], L"-t") == 0)
         {
             UseTimestamp = TRUE;
@@ -128,7 +133,7 @@ int _cdecl main()
     //
     // Create a new dumper object.
     //
-    if (!DumperCreate(&Dumper, Name, OutputPath, DecryptFactor, UseTimestamp))
+    if (!DumperCreate(&Dumper, Name, OutputPath, DecryptFactor, UseTimestamp, WaitLaunch))
     {
         return EXIT_FAILURE;
     }
@@ -159,6 +164,7 @@ Usage()
         stdout, "  --decrypt <factor>   Fraction of no access pages to have decrypted before dumping (Default: 1.0).\n");
     fprintf(stdout, "Flags:\n");
     fprintf(stdout, "  -D                    Run with elevated privileges (Default: false).\n");
+    fprintf(stdout, "  -w                    Wait for process to open (Default: false).\n");
 }
 
 _Success_(return)

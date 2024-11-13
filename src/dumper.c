@@ -35,7 +35,8 @@ DumperCreate(
     _In_ LPWSTR ProcessName,
     _In_ LPWSTR OutputPath,
     _In_ FLOAT DecryptionFactor,
-    _In_ BOOL UseTimestamp)
+    _In_ BOOL UseTimestamp,
+    _In_ BOOL WaitLaunch)
 {
     OBJECT_ATTRIBUTES ObjectAttributes;
     CLIENT_ID ClientId;
@@ -60,9 +61,33 @@ DumperCreate(
     //
     // Get the process ID of the target process.
     //
-    Dumper->ProcessId = GetProcessIdByName(ProcessName);
+    BOOL Success = FALSE;
 
-    if (!Dumper->ProcessId)
+    if (WaitLaunch)
+    {
+        for (;;)
+        {
+            Dumper->ProcessId = GetProcessIdByName(ProcessName);
+
+            if (Dumper->ProcessId != 0)
+            {
+                break;
+            }
+
+            Sleep(10);
+
+            warn("Failed to get process ID. Retrying...");
+        }
+
+        Success = Dumper->ProcessId != 0;
+    }
+    else
+    {
+        Dumper->ProcessId = GetProcessIdByName(ProcessName);
+        Success = Dumper->ProcessId != 0;
+    }
+
+    if (!Success)
     {
         error("Failed to get the process ID of the target process");
         return FALSE;

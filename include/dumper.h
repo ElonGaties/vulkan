@@ -36,7 +36,8 @@ DumperCreate(
     _In_ LPWSTR ProcessName,
     _In_ LPWSTR OutputPath,
     _In_ FLOAT DecryptionFactor,
-    _In_ BOOL UseTimestamp);
+    _In_ BOOL UseTimestamp,
+    _In_ BOOL WaitLaunch);
 
 //
 // Dumps the target process memory to disk. Decrypts no access memory regions if the decryption flag is set.
